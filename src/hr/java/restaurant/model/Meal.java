@@ -1,21 +1,20 @@
 package hr.java.restaurant.model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
-public class Meal {
+public class Meal extends Entity{
     String Name;
     Category Category;
     Ingredient[] ingredients;
     BigDecimal Price;
 
-    public Meal(String name, hr.java.restaurant.model.Category category, Ingredient[] ingredients, BigDecimal price) {
+    public Meal(Long id, String name, Category category, Ingredient[] ingredients, BigDecimal price) {
+        super(id);
         Name = name;
         Category = category;
         this.ingredients = ingredients;
         Price = price;
-    }
-
-    public Meal() {
     }
 
     public String getName() {
@@ -26,11 +25,11 @@ public class Meal {
         Name = name;
     }
 
-    public hr.java.restaurant.model.Category getCategory() {
+    public Category getCategory() {
         return Category;
     }
 
-    public void setCategory(hr.java.restaurant.model.Category category) {
+    public void setCategory(Category category) {
         Category = category;
     }
 
@@ -48,5 +47,11 @@ public class Meal {
 
     public void setPrice(BigDecimal price) {
         Price = price;
+    }
+
+    public BigDecimal getTotalCalories() {
+        return Arrays.stream(ingredients)
+                .map(Ingredient::getKcal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

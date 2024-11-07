@@ -2,20 +2,18 @@ package hr.java.restaurant.model;
 
 import java.math.BigDecimal;
 
-public class Ingredient {
+public class Ingredient extends Entity{
     String Name;
     Category Category;
     BigDecimal Kcal;
     String PreparationMethod;
 
-    public Ingredient(String name, hr.java.restaurant.model.Category category, BigDecimal kcal, String preparationMethod) {
+    public Ingredient(Long id, String name, hr.java.restaurant.model.Category category, BigDecimal kcal, String preparationMethod) {
+        super(id);
         Name = name;
         Category = category;
         Kcal = kcal;
         PreparationMethod = preparationMethod;
-    }
-
-    public Ingredient() {
     }
 
     public String getName() {
@@ -26,11 +24,11 @@ public class Ingredient {
         Name = name;
     }
 
-    public hr.java.restaurant.model.Category getCategory() {
+    public Category getCategory() {
         return Category;
     }
 
-    public void setCategory(hr.java.restaurant.model.Category category) {
+    public void setCategory(Category category) {
         Category = category;
     }
 

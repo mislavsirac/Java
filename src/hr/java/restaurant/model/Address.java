@@ -1,50 +1,87 @@
 package hr.java.restaurant.model;
 
-public class Address {
-    String Street;
-    String HouseNumber;
-    String City;
-    String PostalCode;
+public class Address extends Entity {
+    private String street;
+    private String houseNumber;
+    private String city;
+    private String postalCode;
 
-    public Address(String street, String houseNumber, String city, String postalCode) {
-        Street = street;
-        HouseNumber = houseNumber;
-        City = city;
-        PostalCode = postalCode;
+    private Address(Long id, String street, String houseNumber, String city, String postalCode) {
+        super(id);
+        this.street = street;
+        this.houseNumber = houseNumber;
+        this.city = city;
+        this.postalCode = postalCode;
     }
 
-    public Address() {
-    }
-
+    // Getters and Setters
     public String getStreet() {
-        return Street;
+        return street;
     }
 
     public void setStreet(String street) {
-        Street = street;
+        this.street = street;
     }
 
     public String getHouseNumber() {
-        return HouseNumber;
+        return houseNumber;
     }
 
     public void setHouseNumber(String houseNumber) {
-        HouseNumber = houseNumber;
+        this.houseNumber = houseNumber;
     }
 
     public String getCity() {
-        return City;
+        return city;
     }
 
     public void setCity(String city) {
-        City = city;
+        this.city = city;
     }
 
     public String getPostalCode() {
-        return PostalCode;
+        return postalCode;
     }
 
     public void setPostalCode(String postalCode) {
-        PostalCode = postalCode;
+        this.postalCode = postalCode;
+    }
+
+    // Builder class for Address
+    public static class Builder {
+        private Long id;
+        private String street;
+        private String houseNumber;
+        private String city;
+        private String postalCode;
+
+        public Builder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withStreet(String street) {
+            this.street = street;
+            return this;
+        }
+
+        public Builder withHouseNumber(String houseNumber) {
+            this.houseNumber = houseNumber;
+            return this;
+        }
+
+        public Builder withCity(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public Builder withPostalCode(String postalCode) {
+            this.postalCode = postalCode;
+            return this;
+        }
+
+        public Address build() {
+            return new Address(id, street, houseNumber, city, postalCode);
+        }
     }
 }

@@ -1,6 +1,6 @@
 package hr.java.restaurant.model;
 
-public class Restaurant {
+public class Restaurant extends Entity {
     String Name;
     Address Address;
     Meal[] Meals;
@@ -8,16 +8,14 @@ public class Restaurant {
     Waiter[] Waiters;
     Deliverer[] Deliverers;
 
-    public Restaurant(String name, hr.java.restaurant.model.Address address, Meal[] meals, Chef[] chefs, Waiter[] waiters, Deliverer[] deliverers) {
+    public Restaurant(Long id, String name, Address address, Meal[] meals, Chef[] chefs, Waiter[] waiters, Deliverer[] deliverers) {
+        super(id);
         Name = name;
         Address = address;
         Meals = meals;
         Chefs = chefs;
         Waiters = waiters;
         Deliverers = deliverers;
-    }
-
-    public Restaurant() {
     }
 
     public String getName() {
@@ -28,11 +26,11 @@ public class Restaurant {
         Name = name;
     }
 
-    public hr.java.restaurant.model.Address getAddress() {
+    public Address getAddress() {
         return Address;
     }
 
-    public void setAddress(hr.java.restaurant.model.Address address) {
+    public void setAddress(Address address) {
         Address = address;
     }
 

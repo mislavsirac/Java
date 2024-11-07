@@ -2,27 +2,25 @@ package hr.java.restaurant.model;
 
 import java.time.LocalDateTime;
 
-public class Order {
+public class Order extends Entity{
     Restaurant Restaurant;
     Meal[] Meals;
     Deliverer Deliverer;
     LocalDateTime DeliveryDateAndTime;
 
-    public Order(hr.java.restaurant.model.Restaurant restaurant, Meal[] meals, hr.java.restaurant.model.Deliverer deliverer, LocalDateTime deliveryDateAndTime) {
+    public Order(Long id, Restaurant restaurant, Meal[] meals, hr.java.restaurant.model.Deliverer deliverer, LocalDateTime deliveryDateAndTime) {
+        super(id);
         Restaurant = restaurant;
         Meals = meals;
         Deliverer = deliverer;
         DeliveryDateAndTime = deliveryDateAndTime;
     }
 
-    public Order() {
-    }
-
-    public hr.java.restaurant.model.Restaurant getRestaurant() {
+    public Restaurant getRestaurant() {
         return Restaurant;
     }
 
-    public void setRestaurant(hr.java.restaurant.model.Restaurant restaurant) {
+    public void setRestaurant(Restaurant restaurant) {
         Restaurant = restaurant;
     }
 
@@ -34,11 +32,11 @@ public class Order {
         Meals = meals;
     }
 
-    public hr.java.restaurant.model.Deliverer getDeliverer() {
+    public Deliverer getDeliverer() {
         return Deliverer;
     }
 
-    public void setDeliverer(hr.java.restaurant.model.Deliverer deliverer) {
+    public void setDeliverer(Deliverer deliverer) {
         Deliverer = deliverer;
     }
 

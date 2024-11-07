@@ -1,0 +1,164 @@
+Appetizers
+Starters
+Main Course
+Main dishes
+Desserts
+Sweet treats
+Lettuce
+0
+15
+Chopped
+Tomato
+0
+20
+Sliced
+Chicken
+1
+250
+Grilled
+Mushroom
+2
+30
+Sautéed
+Bell Pepper
+0
+10
+Raw
+Salad Mix
+0
+12.50
+Pizza
+1
+9.99
+Pasta
+1
+11.00
+John
+Doe
+5000
+2020-01-01
+2023-01-01
+1
+Alice
+Smith
+5500
+2021-01-01
+2024-01-01
+2
+Bob
+Jones
+6000
+2019-05-01
+2022-05-01
+1
+Mike
+Johnson
+3000
+2018-03-01
+2021-03-01
+1
+Emma
+Williams
+3200
+2019-06-01
+2022-06-01
+2
+Sophia
+Davis
+2800
+2020-07-01
+2023-07-01
+1
+Jake
+Brown
+2500
+2017-01-01
+2020-01-01
+1
+Olivia
+Taylor
+2700
+2018-02-01
+2021-02-01
+2
+Liam
+Anderson
+2400
+2019-03-01
+2022-03-01
+1
+Gourmet Hub
+Main Street
+123
+New York
+10001
+0,1,2
+The Food Place
+Broadway
+456
+Los Angeles
+90001
+1,2
+Cuisine Corner
+Fifth Avenue
+789
+Chicago
+60001
+0,2
+0
+2024-05-01T12:00
+0
+0,1,2
+1
+2024-06-15T18:30
+0
+1,2
+2
+2024-07-20T20:00
+2
+0,2
+Vegan Burger
+1
+15.99
+true
+0,1,3
+Vegan Wrap
+0
+10.50
+false
+1,2,4
+Vegan Salad
+0
+8.75
+true
+0,3,4
+Veggie Pizza
+1
+12.00
+true
+1,3,4
+Veggie Pasta
+1
+9.50
+false
+0,2,3
+Grilled Cheese Sandwich
+0
+7.00
+true
+1,2
+BBQ Ribs
+1
+18.99
+BBQ
+1,3
+Chicken Wings
+1
+12.50
+Buffalo
+0,2,4
+Steak
+1
+25.00
+Ribeye
+2,3,4
