@@ -1,6 +1,10 @@
 package hr.java.production.main;
 
+import hr.java.restaurant.exception.DuplicateEntityException;
+import hr.java.restaurant.exception.InvalidValueException;
 import hr.java.restaurant.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,12 +12,17 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
+/**
+ * Main klasa
+ */
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
+        logger.info("Starting application");
+
         try (Scanner scanner = new Scanner(new FileInputStream("input.txt"))) {
 
             Category[] categories = inputCategories(scanner);
@@ -33,56 +42,127 @@ public class Main {
             findRestaurantsWithMostExpensiveOrder(restaurants, orders);
             findDelivererWithMostDeliveries(orders, deliverers);
 
+            logger.info("Application finished successfully");
+
         } catch (FileNotFoundException e) {
+            logger.error("Input file not found: {}", e.getMessage());
             System.out.println("Input file not found: " + e.getMessage());
+        } catch (DuplicateEntityException e) {
+            logger.error("Duplicate entity exception occurred: {}", e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    private static Category[] inputCategories(Scanner scanner) {
+    /**
+     * @param scanner sluzi za unos
+     * @return vraca array kategorija
+     * @throws DuplicateEntityException baca exception na duplikate
+     */
+    private static Category[] inputCategories(Scanner scanner) throws DuplicateEntityException {
+        logger.trace("Entering inputCategories method");
         Category[] categories = new Category[3];
         for (int i = 0; i < 3; i++) {
+            logger.debug("Requesting category {} name", i + 1);
             System.out.printf("Enter category %d name: ", i + 1);
             String name = scanner.nextLine();
+
+            if (Arrays.stream(categories)
+                    .filter(Objects::nonNull)
+                    .anyMatch(category -> category.getName().equalsIgnoreCase(name))) {
+                logger.warn("Duplicate category name entered: {}", name);
+                throw new DuplicateEntityException("Category with name " + name + " already exists.");
+            }
+
             System.out.print("Enter category description: ");
             String description = scanner.nextLine();
+            logger.debug("Entered description for category {}: {}", name, description);
+
             categories[i] = new Category.Builder()
-                    .withId((long)i)
+                    .withId((long) i)
                     .withName(name)
                     .withDescription(description)
                     .build();
+
+            logger.info("Added category: {}", categories[i]);
         }
+        logger.trace("Exiting inputCategories method");
         return categories;
     }
 
-    private static Ingredient[] inputIngredients(Scanner scanner, Category[] categories) {
+    /**
+     *
+     * @param scanner sluzi za unosenje
+     * @param categories kategorije
+     * @return vraca array kategorija
+     * @throws DuplicateEntityException baca gresku za duplice
+     */
+    private static Ingredient[] inputIngredients(Scanner scanner, Category[] categories) throws DuplicateEntityException {
+        logger.trace("Entering inputIngredients method");
         Ingredient[] ingredients = new Ingredient[5];
         for (int i = 0; i < 5; i++) {
+            logger.debug("Requesting ingredient {} name", i + 1);
             System.out.printf("Enter ingredient %d name: ", i + 1);
             String name = scanner.nextLine();
+
+            if (Arrays.stream(ingredients)
+                    .filter(Objects::nonNull)
+                    .anyMatch(ingredient -> ingredient.getName().equalsIgnoreCase(name))) {
+                logger.warn("Duplicate ingredient name entered: {}", name);
+                throw new DuplicateEntityException("Ingredient with name " + name + " already exists.");
+            }
+
             int categoryIndex = getValidIndex(scanner, "ingredient category index (0-2)", 0, 2);
             BigDecimal kcal = getValidBigDecimal(scanner, "ingredient kcal");
+
             System.out.print("Enter ingredient preparation method: ");
             String preparationMethod = scanner.nextLine();
-            ingredients[i] = new Ingredient((long)i, name, categories[categoryIndex], kcal, preparationMethod);
+            logger.debug("Preparation method for ingredient {}: {}", name, preparationMethod);
+
+            ingredients[i] = new Ingredient((long) i, name, categories[categoryIndex], kcal, preparationMethod);
+            logger.info("Added ingredient: {}", ingredients[i]);
         }
+        logger.trace("Exiting inputIngredients method");
         return ingredients;
     }
 
-    private static Meal[] inputMeals(Scanner scanner, Category[] categories, Ingredient[] ingredients) {
+    /**
+     *
+     * @param scanner sluzi za unosenje
+     * @param categories kategorije
+     * @param ingredients sastojci
+     * @return vraca array mealova
+     * @throws DuplicateEntityException baca exception za duplice
+     */
+    private static Meal[] inputMeals(Scanner scanner, Category[] categories, Ingredient[] ingredients) throws DuplicateEntityException {
+        logger.trace("Entering inputMeals method");
         Meal[] meals = new Meal[3];
         for (int i = 0; i < 3; i++) {
+            logger.debug("Requesting meal {} name", i + 1);
             System.out.printf("Enter meal %d name: ", i + 1);
             String name = scanner.nextLine();
+
+            if (Arrays.stream(meals)
+                    .filter(Objects::nonNull)
+                    .anyMatch(meal -> meal.getName().equalsIgnoreCase(name))) {
+                logger.warn("Duplicate meal name entered: {}", name);
+                throw new DuplicateEntityException("Meal with name " + name + " already exists.");
+            }
+
             int categoryIndex = getValidIndex(scanner, "meal category index (0-2)", 0, 2);
             BigDecimal price = getValidBigDecimal(scanner, "meal price");
-            meals[i] = new Meal((long)i, name, categories[categoryIndex], ingredients, price);
+
+            meals[i] = new Meal((long) i, name, categories[categoryIndex], ingredients, price);
+            logger.info("Added meal: {}", meals[i]);
         }
+        logger.trace("Exiting inputMeals method");
         return meals;
     }
 
-    private static Chef[] inputChefs(Scanner scanner) {
+    private static Chef[] inputChefs(Scanner scanner) throws InvalidValueException {
+        logger.trace("Entering inputChefs method");
         Chef[] chefs = new Chef[3];
         for (int i = 0; i < 3; i++) {
+            logger.debug("Requesting chef {}'s first name", i + 1);
             System.out.printf("Enter chef %d's first name: ", i + 1);
             String firstName = scanner.nextLine();
 
@@ -90,6 +170,10 @@ public class Main {
             String lastName = scanner.nextLine();
 
             BigDecimal salary = getValidBigDecimal(scanner, "chef's salary");
+            if (salary.compareTo(BigDecimal.valueOf(650)) < 0) {
+                logger.warn("Entered salary for chef {} {} is below minimum: {}", firstName, lastName, salary);
+                throw new InvalidValueException("Salary must be greater than minimum wage (650)");
+            }
 
             System.out.print("Enter contract start date (yyyy-MM-dd): ");
             LocalDate startDate = getValidDate(scanner);
@@ -101,20 +185,18 @@ public class Main {
             Contract.ContractType contractType = getValidContractTypeChoice(scanner);
 
             Contract contract = new Contract(salary, startDate, endDate, contractType);
-
-            chefs[i] = new Chef.Builder()
-                    .withId((long) i + 1)
-                    .withFirstName(firstName)
-                    .withLastName(lastName)
-                    .withContract(contract)
-                    .build();
+            chefs[i] = new Chef.Builder().withId((long) i + 1).withFirstName(firstName).withLastName(lastName).withContract(contract).build();
+            logger.info("Added chef: {}", chefs[i]);
         }
+        logger.trace("Exiting inputChefs method");
         return chefs;
     }
 
     private static Waiter[] inputWaiters(Scanner scanner) {
+        logger.trace("Entering inputWaiters method");
         Waiter[] waiters = new Waiter[3];
         for (int i = 0; i < 3; i++) {
+            logger.debug("Requesting waiter {}'s first name", i + 1);
             System.out.printf("Enter waiter %d's first name: ", i + 1);
             String firstName = scanner.nextLine();
 
@@ -134,13 +216,10 @@ public class Main {
 
             Contract contract = new Contract(salary, startDate, endDate, contractType);
 
-            waiters[i] = new Waiter.Builder()
-                    .withId((long) i + 1)
-                    .withFirstName(firstName)
-                    .withLastName(lastName)
-                    .withContract(contract)
-                    .build();
+            waiters[i] = new Waiter.Builder().withId((long) i + 1).withFirstName(firstName).withLastName(lastName).withContract(contract).build();
+            logger.info("Added waiter: {}", waiters[i]);
         }
+        logger.trace("Exiting inputWaiters method");
         return waiters;
     }
 
@@ -178,31 +257,81 @@ public class Main {
     }
 
     private static LocalDate getValidDate(Scanner scanner) {
+        logger.trace("Entering getValidDate method");
         LocalDate date;
         while (true) {
             try {
                 date = LocalDate.parse(scanner.nextLine());
+                logger.debug("Valid LocalDate entered: {}", date);
                 break;
             } catch (DateTimeParseException e) {
+                logger.error("Invalid date format entered", e);
                 System.out.print("Invalid date format. Please enter a date in the format yyyy-MM-dd: ");
             }
         }
+        logger.trace("Exiting getValidDate method");
         return date;
     }
 
-    // Helper method for contract type selection
     private static Contract.ContractType getValidContractTypeChoice(Scanner scanner) {
+        logger.trace("Entering getValidContractTypeChoice method");
         while (true) {
             String input = scanner.nextLine().trim();
+            logger.debug("User entered contract type choice: {}", input);
             if (input.equals("1")) {
+                logger.trace("Exiting getValidContractTypeChoice method with FULL_TIME");
                 return Contract.ContractType.FULL_TIME;
             } else if (input.equals("2")) {
+                logger.trace("Exiting getValidContractTypeChoice method with PART_TIME");
                 return Contract.ContractType.PART_TIME;
             } else {
+                logger.warn("Invalid contract type choice entered: {}", input);
                 System.out.print("Invalid choice. Please enter 1 for FULL_TIME or 2 for PART_TIME: ");
             }
         }
     }
+
+    private static int getValidIndex(Scanner scanner, String prompt, int min, int max) {
+        logger.trace("Entering getValidIndex method with prompt: {}", prompt);
+        int index;
+        while (true) {
+            System.out.print("Enter " + prompt + ": ");
+            try {
+                index = Integer.parseInt(scanner.nextLine());
+                if (index >= min && index <= max) {
+                    logger.debug("Valid index entered: {}", index);
+                    break;
+                } else {
+                    logger.warn("Index out of range entered: {}", index);
+                    System.out.printf("Invalid index. Please enter a value between %d and %d.%n", min, max);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Invalid format for index", e);
+                System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+        logger.trace("Exiting getValidIndex method");
+        return index;
+    }
+
+    private static BigDecimal getValidBigDecimal(Scanner scanner, String prompt) {
+        logger.trace("Entering getValidBigDecimal method with prompt: {}", prompt);
+        BigDecimal value;
+        while (true) {
+            System.out.print("Enter " + prompt + ": ");
+            try {
+                value = new BigDecimal(scanner.nextLine());
+                logger.debug("Valid BigDecimal entered: {}", value);
+                break;
+            } catch (NumberFormatException e) {
+                logger.error("Invalid format for BigDecimal", e);
+                System.out.println("Invalid input. Please enter a valid decimal number.");
+            }
+        }
+        logger.trace("Exiting getValidBigDecimal method");
+        return value;
+    }
+
 
     private static Restaurant[] inputRestaurants(Scanner scanner, Meal[] meals, Chef[] chefs, Waiter[] waiters, Deliverer[] deliverers) {
         Restaurant[] restaurants = new Restaurant[3];
@@ -269,38 +398,6 @@ public class Main {
         return orders;
     }
 
-
-    private static int getValidIndex(Scanner scanner, String prompt, int min, int max) {
-        int index;
-        while (true) {
-            System.out.print("Enter " + prompt + ": ");
-            try {
-                index = Integer.parseInt(scanner.nextLine());
-                if (index >= min && index <= max) {
-                    break;
-                } else {
-                    System.out.printf("Invalid index. Please enter a value between %d and %d.%n", min, max);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
-            }
-        }
-        return index;
-    }
-
-    private static BigDecimal getValidBigDecimal(Scanner scanner, String prompt) {
-        BigDecimal value;
-        while (true) {
-            System.out.print("Enter " + prompt + ": ");
-            try {
-                value = new BigDecimal(scanner.nextLine());
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid decimal number.");
-            }
-        }
-        return value;
-    }
 
     private static LocalDateTime getValidDateTime(Scanner scanner, String prompt) {
         LocalDateTime dateTime;
